@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Belaya Hub">
+<title>Belaya Hub</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  :root{
+    --bg:#ffffff;--bg2:#f4f4f5;--bg3:#e4e4e7;
+    --text:#18181b;--text2:#71717a;--text3:#a1a1aa;
+    --border:#e4e4e7;
+    --green:#16a34a;--green-bg:#f0fdf4;
+    --blue:#1d6fb8;--blue-bg:#eff6ff;
+    --red:#dc2626;--red-bg:#fef2f2;
+    --amber:#b45309;--amber-bg:#fffbeb;
+    --purple:#6d28d9;--purple-bg:#f5f3ff;
+    --c144:#1D9E75;--c149:#378ADD;--c142:#7F77DD;--c148:#EF9F27;
+  }
+  @media(prefers-color-scheme:dark){
+    :root{
+      --bg:#18181b;--bg2:#27272a;--bg3:#3f3f46;
+      --text:#fafafa;--text2:#a1a1aa;--text3:#71717a;
+      --border:#3f3f46;
+      --green:#4ade80;--green-bg:#052e16;
+      --blue:#60a5fa;--blue-bg:#1e3a5f;
+      --red:#f87171;--red-bg:#450a0a;
+      --amber:#fbbf24;--amber-bg:#451a03;
+      --purple:#a78bfa;--purple-bg:#2e1065;
+    }
+  }
+  body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;padding-bottom:80px}
+  .header{padding:20px 16px 0}
+  .eyebrow{font-size:11px;font-weight:500;color:var(--text2);letter-spacing:.07em;text-transform:uppercase;margin-bottom:3px}
+  .title{font-size:22px;font-weight:600;color:var(--text);margin-bottom:20px}
+  .tabs{display:flex;border-bottom:1px solid var(--border);overflow-x:auto;padding:0 16px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{background:none;border:none;border-bottom:2px solid transparent;padding:11px 14px;font-size:14px;color:var(--text2);cursor:pointer;white-space:nowrap;font-family:inherit}
+  .tab.active{border-bottom-color:var(--text);color:var(--text);font-weight:600}
+  .body{padding:20px 16px}
+  .kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:24px}
+  .kpi{background:var(--bg2);border-radius:10px;padding:12px}
+  .kpi-label{font-size:11px;color:var(--text2);margin-bottom:5px}
+  .kpi-val{font-size:18px;font-weight:600;color:var(--text)}
+  .kpi-sub{font-size:10px;color:var(--text3);margin-top:2px}
+  .section-label{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+  .card{background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px}
+  .card-row{display:flex;justify-content:space-between;align-items:center}
+  .bar-track{background:var(--bg3);border-radius:3px;height:5px;margin:8px 0;overflow:hidden}
+  .bar-fill{height:100%;border-radius:3px;transition:width .4s}
+  .truck-pills{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin-bottom:20px}
+  .truck-pills::-webkit-scrollbar{display:none}
+  .pill{border:1.5px solid var(--border);border-radius:20px;padding:6px 14px;font-size:13px;color:var(--text2);background:var(--bg);cursor:pointer;white-space:nowrap;font-family:inherit}
+  .pill.active{color:#fff;border-color:transparent}
+  .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .stat-box{border-radius:10px;padding:10px}
+  .stat-label{font-size:10px;margin-bottom:4px}
+  .stat-val{font-size:15px;font-weight:600;color:var(--text)}
+  .chart{display:flex;gap:4px;align-items:flex-end;height:90px;margin-bottom:4px}
+  .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
+  .bar-col-label{font-size:9px;color:var(--text3)}
+  .bar-col-val{font-size:8px;color:var(--text3);line-height:1}
+  .input{width:100%;padding:10px 12px;font-size:14px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-family:inherit;appearance:none}
+  .input:focus{outline:2px solid var(--blue);outline-offset:0}
+  .select{flex:1;padding:9px 10px;font-size:12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-family:inherit;appearance:none}
+  .btn-primary{width:100%;padding:12px;background:var(--text);color:var(--bg);border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;margin-top:10px}
+  .btn-primary:active{opacity:.8}
+  .alert-box{display:flex;align-items:flex-start;gap:10px;background:var(--red-bg);border:1px solid var(--red);border-radius:10px;padding:12px;margin-bottom:8px}
+  .alert-text{font-size:13px;color:var(--text);flex:1;line-height:1.45}
+  .btn-resolve{font-size:12px;background:transparent;border:1px solid var(--red);border-radius:6px;padding:4px 10px;color:var(--red);cursor:pointer;font-family:inherit;flex-shrink:0;white-space:nowrap}
+  .badge{font-size:11px;padding:2px 8px;border-radius:20px;display:inline-block}
+  .pending-item{display:flex;align-items:flex-start;gap:10px;padding:13px 0;border-bottom:1px solid var(--border)}
+  .pending-item input[type=checkbox]{width:18px;height:18px;margin-top:1px;flex-shrink:0;accent-color:var(--blue)}
+  .pending-text{font-size:13px;color:var(--text);line-height:1.45;margin-bottom:6px}
+  .pending-done{opacity:.4}
+  .pending-done .pending-text{text-decoration:line-through;color:var(--text2)}
+  .nomina-driver{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+  .dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+  .nomina-name{width:100px;flex-shrink:0}
+  .nomina-name-main{font-size:13px;font-weight:500;color:var(--text)}
+  .nomina-name-sub{font-size:11px;color:var(--text2)}
+  .result-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+  .result-box{border-radius:10px;padding:12px}
+  .result-label{font-size:10px;margin-bottom:4px}
+  .result-val{font-size:17px;font-weight:600;color:var(--text)}
+  .total-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0}
+  .divider{border-top:1px solid var(--border);margin:8px 0}
+  .filter-pills{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin-bottom:20px}
+  .filter-pills::-webkit-scrollbar{display:none}
+  .fpill{border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:12px;color:var(--text2);background:var(--bg);cursor:pointer;white-space:nowrap;font-family:inherit}
+  .fpill.active{background:var(--text);color:var(--bg);border-color:var(--text)}
+  .mt{margin-top:20px}
+  .mb8{margin-bottom:8px}
+  .flex-gap6{display:flex;gap:6px;flex-wrap:wrap}
+  .icon{font-size:16px;flex-shrink:0;margin-top:1px}
+  .selects-row{display:flex;gap:6px;margin-top:8px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="eyebrow">Belaya Experts LLC</div>
+  <div class="title">Centro de Operaciones</div>
+</div>
+
+<div class="tabs" id="tabs">
+  <button class="tab active" onclick="showTab('dashboard')">Dashboard</button>
+  <button class="tab" onclick="showTab('flota')">Flota</button>
+  <button class="tab" onclick="showTab('nomina')">Nómina</button>
+  <button class="tab" onclick="showTab('pendientes')">Pendientes</button>
+</div>
+
+<div class="body">
+
+<!-- DASHBOARD -->
+<div id="tab-dashboard">
+  <div class="kpi-grid">
+    <div class="kpi">
+      <div class="kpi-label">Gross YTD</div>
+      <div class="kpi-val">$165k</div>
+      <div class="kpi-sub">Ene–Jun 2026</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Belaya neto</div>
+      <div class="kpi-val" style="color:var(--green)">$47k</div>
+      <div class="kpi-sub">45% del NET</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">A drivers</div>
+      <div class="kpi-val">$83k</div>
+      <div class="kpi-sub">55% del NET</div>
+    </div>
+  </div>
+
+  <div class="section-label">Rendimiento por unidad</div>
+
+  <div class="card" onclick="goFlota('144')" style="cursor:pointer">
+    <div class="card-row">
+      <div><span style="font-size:14px;font-weight:600">Volvo 144</span> <span style="font-size:12px;color:var(--text2)">José Bonilla</span></div>
+      <span style="font-size:14px;font-weight:600">$73,093</span>
+    </div>
+    <div class="bar-track"><div class="bar-fill" style="width:44%;background:var(--c144)"></div></div>
+    <div class="card-row"><span style="font-size:11px;color:var(--text2)">Belaya $16,785</span><span style="font-size:11px;color:var(--text2)">Driver $27,822</span><span style="font-size:11px;color:var(--text3)">44%</span></div>
+  </div>
+
+  <div class="card" onclick="goFlota('149')" style="cursor:pointer">
+    <div class="card-row">
+      <div><span style="font-size:14px;font-weight:600">Int'l 149</span> <span style="font-size:12px;color:var(--text2)">Jorge Belfort</span></div>
+      <span style="font-size:14px;font-weight:600">$27,196</span>
+    </div>
+    <div class="bar-track"><div class="bar-fill" style="width:16%;background:var(--c149)"></div></div>
+    <div class="card-row"><span style="font-size:11px;color:var(--text2)">Belaya $8,035</span><span style="font-size:11px;color:var(--text2)">Driver $16,088</span><span style="font-size:11px;color:var(--text3)">16%</span></div>
+  </div>
+
+  <div class="card" onclick="goFlota('142')" style="cursor:pointer">
+    <div class="card-row">
+      <div><span style="font-size:14px;font-weight:600">Volvo 142</span> <span style="font-size:12px;color:var(--text2)">Patrick Swanson</span></div>
+      <span style="font-size:14px;font-weight:600">$52,835</span>
+    </div>
+    <div class="bar-track"><div class="bar-fill" style="width:32%;background:var(--c142)"></div></div>
+    <div class="card-row"><span style="font-size:11px;color:var(--text2)">Belaya $19,467</span><span style="font-size:11px;color:var(--text2)">Driver $32,968</span><span style="font-size:11px;color:var(--text3)">32%</span></div>
+  </div>
+
+  <div class="card" onclick="goFlota('148')" style="cursor:pointer">
+    <div class="card-row">
+      <div><span style="font-size:14px;font-weight:600">Int'l 148</span> <span style="font-size:12px;color:var(--text2)">Sorrento</span></div>
+      <span style="font-size:14px;font-weight:600">$11,883</span>
+    </div>
+    <div class="bar-track"><div class="bar-fill" style="width:7%;background:var(--c148)"></div></div>
+    <div class="card-row"><span style="font-size:11px;color:var(--text2)">Belaya $2,999</span><span style="font-size:11px;color:var(--text2)">Driver $5,855</span><span style="font-size:11px;color:var(--text3)">7%</span></div>
+  </div>
+
+  <div class="section-label mt" id="alertas-label">Alertas activas</div>
+  <div id="alertas-list"></div>
+</div>
+
+<!-- FLOTA -->
+<div id="tab-flota" style="display:none">
+  <div class="truck-pills" id="truck-pills"></div>
+  <div id="flota-content"></div>
+</div>
+
+<!-- NÓMINA -->
+<div id="tab-nomina" style="display:none">
+  <p style="font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.5">Ingresa el gross semanal de cada unidad y calculo el pago automáticamente con el split 55/45.</p>
+  <div class="card">
+    <div style="font-size:14px;font-weight:600;margin-bottom:14px">Gross semanal por unidad</div>
+    <div id="nomina-inputs"></div>
+    <button class="btn-primary" onclick="calcNomina()">Calcular nómina</button>
+  </div>
+  <div id="nomina-result"></div>
+</div>
+
+<!-- PENDIENTES -->
+<div id="tab-pendientes" style="display:none">
+  <div class="filter-pills" id="filter-pills"></div>
+  <div class="card mb8">
+    <div style="font-size:14px;font-weight:600;margin-bottom:10px">Agregar pendiente</div>
+    <input class="input" id="nuevo-texto" placeholder="Descripción del pendiente..." onkeydown="if(event.key==='Enter')agregar()">
+    <div class="selects-row">
+      <select class="select" id="nueva-cat">
+        <option value="flota">Flota</option>
+        <option value="nomina">Nómina</option>
+        <option value="contabilidad">Contab.</option>
+        <option value="legal">Legal</option>
+        <option value="seguro">Seguro</option>
+      </select>
+      <select class="select" id="nueva-urg">
+        <option value="alta">🔴 Alta</option>
+        <option value="media">🟡 Media</option>
+        <option value="baja">🟢 Baja</option>
+      </select>
+      <select class="select" id="nueva-truck">
+        <option value="">General</option>
+        <option value="144">144</option>
+        <option value="149">149</option>
+        <option value="142">142</option>
+        <option value="148">148</option>
+      </select>
+    </div>
+    <button class="btn-primary" onclick="agregar()">+ Agregar</button>
+  </div>
+  <div id="pendientes-list"></div>
+</div>
+
+</div>
+
+<script>
+const TRUCKS = [
+  {id:"144",type:"Volvo",driver:"José Bonilla",color:"var(--c144)"},
+  {id:"149",type:"Int'l",driver:"Jorge Belfort",color:"var(--c149)"},
+  {id:"142",type:"Volvo",driver:"Patrick Swanson",color:"var(--c142)"},
+  {id:"148",type:"Int'l",driver:"Sorrento",color:"var(--c148)"},
+];
+
+const MONTHLY = {
+  "144":[{m:"Ene",g:12189},{m:"Feb",g:11904},{m:"Mar",g:12056},{m:"Abr",g:12452},{m:"May",g:14034},{m:"Jun",g:13093}],
+  "149":[{m:"Ene",g:6923},{m:"Feb",g:6341},{m:"Mar",g:6003},{m:"Abr",g:6825},{m:"May",g:8619},{m:"Jun",g:9070}],
+  "142":[{m:"Ene",g:8450},{m:"Feb",g:16135},{m:"Mar",g:13322},{m:"Abr",g:20370},{m:"May",g:18422},{m:"Jun",g:15478}],
+  "148":[{m:"Ene",g:3255},{m:"Feb",g:3798},{m:"Mar",g:9228},{m:"Abr",g:1438},{m:"May",g:0},{m:"Jun",g:1543}],
+};
+
+const YTD = {
+  "144":{gross:73093,driver:27822,belaya:16785,fuel:22058},
+  "149":{gross:27196,driver:16088,belaya:8035,fuel:5918},
+  "142":{gross:52835,driver:32968,belaya:19467,fuel:18884},
+  "148":{gross:11883,driver:5855,belaya:2999,fuel:3270},
+};
+
+let pendientes = [
+  {id:1,cat:"flota",truck:"149",texto:"Fault code SPN 596 — Cruise Control (Truck 149)",urgencia:"alta",done:false,fecha:"2026-05-27"},
+  {id:2,cat:"flota",truck:"144",texto:"Fault code SPN 520245 (Truck 144) — revisar con mecánico",urgencia:"alta",done:false,fecha:"2026-05-27"},
+  {id:3,cat:"nomina",truck:"148",texto:"Confirmar datos de Sorrento para 1099-NEC 2026",urgencia:"media",done:false,fecha:"2026-06-16"},
+  {id:4,cat:"legal",truck:null,texto:"Trámite MC/DOT authority propia — Belaya Experts",urgencia:"media",done:false,fecha:"2026-06-16"},
+  {id:5,cat:"contabilidad",truck:null,texto:"Enviar reporte Q2 a Percy (CPA)",urgencia:"alta",done:false,fecha:"2026-06-30"},
+  {id:6,cat:"flota",truck:"148",texto:"Int'l 148 inactiva desde mayo — conseguir driver",urgencia:"alta",done:false,fecha:"2026-06-16"},
+  {id:7,cat:"contabilidad",truck:null,texto:"IFTA Q2 2026 — vence julio 31",urgencia:"media",done:false,fecha:"2026-07-31"},
+  {id:8,cat:"seguro",truck:null,texto:"Verificar renovación de pólizas de flota",urgencia:"media",done:false,fecha:"2026-07-01"},
+];
+
+let filterCat = "todos";
+let selTruck = "144";
+let idCounter = 100;
+
+const fmt = n => "$" + Math.round(n).toLocaleString();
+const fmtK = n => n >= 1000 ? "$" + (n/1000).toFixed(0) + "k" : fmt(n);
+
+const CAT_STYLE = {
+  flota:["var(--green-bg)","var(--green)"],
+  nomina:["var(--blue-bg)","var(--blue)"],
+  contabilidad:["var(--amber-bg)","var(--amber)"],
+  legal:["var(--purple-bg)","var(--purple)"],
+  seguro:["var(--red-bg)","var(--red)"],
+};
+const URG_STYLE = {
+  alta:["var(--red-bg)","var(--red)"],
+  media:["var(--amber-bg)","var(--amber)"],
+  baja:["var(--green-bg)","var(--green)"],
+};
+
+function badge(text, bg, color) {
+  return `<span class="badge" style="background:${bg};color:${color}">${text}</span>`;
+}
+
+function showTab(name) {
+  ["dashboard","flota","nomina","pendientes"].forEach(t => {
+    document.getElementById("tab-"+t).style.display = t === name ? "block" : "none";
+  });
+  document.querySelectorAll(".tab").forEach((el,i) => {
+    el.classList.toggle("active", ["dashboard","flota","nomina","pendientes"][i] === name);
+  });
+  if (name === "flota") renderFlota();
+  if (name === "pendientes") renderPendientes();
+  if (name === "nomina") renderNominaInputs();
+  if (name === "dashboard") renderAlertas();
+}
+
+function goFlota(id) {
+  selTruck = id;
+  showTab("flota");
+}
+
+// ALERTAS
+function renderAlertas() {
+  const alertas = pendientes.filter(p => !p.done && p.urgencia === "alta");
+  const el = document.getElementById("alertas-list");
+  const lbl = document.getElementById("alertas-label");
+  lbl.textContent = `Alertas activas (${alertas.length})`;
+  el.innerHTML = alertas.map(p => `
+    <div class="alert-box">
+      <span class="icon" style="color:var(--red)">⚠️</span>
+      <span class="alert-text">${p.texto}</span>
+      <button class="btn-resolve" onclick="togglePendiente(${p.id});renderAlertas()">Listo</button>
+    </div>
+  `).join("");
+}
+renderAlertas();
+
+// FLOTA
+function renderFlota() {
+  // Pills
+  document.getElementById("truck-pills").innerHTML = TRUCKS.map(t => `
+    <button class="pill${t.id===selTruck?' active':''}" 
+      style="${t.id===selTruck?'background:'+t.color+';border-color:'+t.color:''}"
+      onclick="selTruck='${t.id}';renderFlota()">
+      ${t.type} ${t.id}
+    </button>
+  `).join("");
+
+  const t = TRUCKS.find(x => x.id === selTruck);
+  const y = YTD[selTruck];
+  const mo = MONTHLY[selTruck];
+  const maxG = Math.max(...mo.map(m => m.g), 1);
+
+  const bars = mo.map(m => {
+    const h = Math.max(3, Math.round((m.g / maxG) * 75));
+    return `
+      <div class="bar-col">
+        <div class="bar-col-val">${m.g ? fmtK(m.g).replace("$","") : ""}</div>
+        <div style="width:100%;height:${h}px;background:${m.g ? t.color : "var(--bg3)"};border-radius:3px 3px 0 0;opacity:${m.g?1:0.3}"></div>
+        <div class="bar-col-label">${m.m}</div>
+      </div>`;
+  }).join("");
+
+  const pending = pendientes.filter(p => p.truck === selTruck && !p.done);
+
+  document.getElementById("flota-content").innerHTML = `
+    <div class="card">
+      <div class="card-row" style="margin-bottom:12px">
+        <div>
+          <div style="font-size:16px;font-weight:600;color:var(--text)">${t.type} ${t.id}</div>
+          <div style="font-size:12px;color:var(--text2)">${t.driver}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:20px;font-weight:700;color:${t.color}">${fmt(y.gross)}</div>
+          <div style="font-size:11px;color:var(--text3)">gross YTD</div>
+        </div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-box" style="background:var(--green-bg)">
+          <div class="stat-label" style="color:var(--green)">Belaya</div>
+          <div class="stat-val">${fmt(y.belaya)}</div>
+        </div>
+        <div class="stat-box" style="background:var(--blue-bg)">
+          <div class="stat-label" style="color:var(--blue)">Driver</div>
+          <div class="stat-val">${fmt(y.driver)}</div>
+        </div>
+        <div class="stat-box" style="background:var(--bg2)">
+          <div class="stat-label" style="color:var(--text2)">Fuel</div>
+          <div class="stat-val">${fmt(y.fuel)}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label mt">Gross mensual 2026</div>
+    <div class="chart">${bars}</div>
+
+    ${pending.length > 0 ? `
+      <div class="section-label mt">Pendientes de esta unidad</div>
+      ${pending.map(p => `
+        <div class="pending-item">
+          <input type="checkbox" onchange="togglePendiente(${p.id});renderFlota()">
+          <div>
+            <div class="pending-text">${p.texto}</div>
+            <div class="flex-gap6">${badge(p.urgencia,...URG_STYLE[p.urgencia])}</div>
+          </div>
+        </div>
+      `).join("")}
+    ` : ""}
+  `;
+}
+
+// NÓMINA
+function renderNominaInputs() {
+  document.getElementById("nomina-inputs").innerHTML = TRUCKS.map(t => `
+    <div class="nomina-driver">
+      <div class="dot" style="background:${t.color}"></div>
+      <div class="nomina-name">
+        <div class="nomina-name-main">${t.type} ${t.id}</div>
+        <div class="nomina-name-sub">${t.driver.split(" ")[0]}</div>
+      </div>
+      <input class="input" id="gross-${t.id}" type="number" placeholder="0.00" style="flex:1">
+    </div>
+  `).join("");
+}
+
+function calcNomina() {
+  const results = TRUCKS.map(t => {
+    const g = parseFloat(document.getElementById("gross-"+t.id).value) || 0;
+    if (!g) return null;
+    const ded = 135 + 25 + 8 + 35 + 8.5;
+    const net = Math.max(0, g - ded);
+    return {...t, gross:g, net, driver:net*0.55, belaya:net*0.45};
+  }).filter(Boolean);
+
+  if (!results.length) {
+    document.getElementById("nomina-result").innerHTML = "<p style='color:var(--text2);font-size:13px;margin-top:12px'>Ingresa al menos un gross para calcular.</p>";
+    return;
+  }
+
+  const totalGross = results.reduce((a,r) => a+r.gross, 0);
+  const totalBelaya = results.reduce((a,r) => a+r.belaya, 0);
+  const totalDriver = results.reduce((a,r) => a+r.driver, 0);
+
+  document.getElementById("nomina-result").innerHTML = `
+    <div class="section-label mt">Resultado semana</div>
+    ${results.map(r => `
+      <div class="card">
+        <div class="card-row" style="margin-bottom:8px">
+          <div>
+            <span style="font-size:14px;font-weight:600">${r.driver}</span>
+            <span style="font-size:12px;color:var(--text2);margin-left:6px">${r.type} ${r.id}</span>
+          </div>
+          <span style="font-size:12px;color:var(--text2)">Gross ${fmt(r.gross)}</span>
+        </div>
+        <div class="result-grid">
+          <div class="result-box" style="background:var(--blue-bg)">
+            <div class="result-label" style="color:var(--blue)">Pago driver (55%)</div>
+            <div class="result-val">${fmt(r.driver)}</div>
+          </div>
+          <div class="result-box" style="background:var(--green-bg)">
+            <div class="result-label" style="color:var(--green)">Belaya (45%)</div>
+            <div class="result-val">${fmt(r.belaya)}</div>
+          </div>
+        </div>
+      </div>
+    `).join("")}
+    <div class="card" style="background:var(--bg2)">
+      <div class="total-row">
+        <span style="font-size:14px;font-weight:600">Total flota</span>
+        <span style="font-size:15px;font-weight:700">${fmt(totalGross)}</span>
+      </div>
+      <div class="divider"></div>
+      <div class="total-row">
+        <span style="font-size:13px;color:var(--text2)">Belaya esta semana</span>
+        <span style="font-size:15px;font-weight:700;color:var(--green)">${fmt(totalBelaya)}</span>
+      </div>
+      <div class="total-row">
+        <span style="font-size:13px;color:var(--text2)">Total a drivers</span>
+        <span style="font-size:15px;font-weight:700;color:var(--blue)">${fmt(totalDriver)}</span>
+      </div>
+    </div>
+  `;
+}
+
+// PENDIENTES
+const CATS = [{k:"todos",l:"Todos"},{k:"flota",l:"Flota"},{k:"nomina",l:"Nómina"},{k:"contabilidad",l:"Contab."},{k:"legal",l:"Legal"},{k:"seguro",l:"Seguro"}];
+
+function renderPendientes() {
+  document.getElementById("filter-pills").innerHTML = CATS.map(c => `
+    <button class="fpill${filterCat===c.k?' active':''}" onclick="filterCat='${c.k}';renderPendientes()">${c.l}</button>
+  `).join("");
+
+  const filtered = pendientes.filter(p => filterCat === "todos" || p.cat === filterCat);
+  const activos = filtered.filter(p => !p.done);
+  const done = filtered.filter(p => p.done);
+
+  let html = activos.length > 0
+    ? `<div class="section-label">Activos (${activos.length})</div>` + activos.map(p => pendienteHTML(p)).join("")
+    : `<p style="font-size:13px;color:var(--text2);padding:10px 0">Sin pendientes activos ✓</p>`;
+
+  if (done.length > 0) {
+    html += `<div class="section-label mt" style="opacity:.5">Completados (${done.length})</div>`;
+    html += done.map(p => pendienteHTML(p, true)).join("");
+  }
+
+  document.getElementById("pendientes-list").innerHTML = html;
+}
+
+function pendienteHTML(p, isDone=false) {
+  const cs = CAT_STYLE[p.cat] || ["var(--bg2)","var(--text2)"];
+  const us = URG_STYLE[p.urgencia];
+  return `
+    <div class="pending-item${isDone?' pending-done':''}">
+      <input type="checkbox" ${isDone?"checked":""} onchange="togglePendiente(${p.id});renderPendientes();renderAlertas()">
+      <div style="flex:1">
+        <div class="pending-text">${p.texto}</div>
+        <div class="flex-gap6">
+          ${badge(p.cat,...cs)}
+          ${badge(p.urgencia,...us)}
+          ${p.truck ? `<span style="font-size:11px;color:var(--text3)">Unidad ${p.truck}</span>` : ""}
+          <span style="font-size:11px;color:var(--text3)">${p.fecha}</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function togglePendiente(id) {
+  const p = pendientes.find(x => x.id === id);
+  if (p) p.done = !p.done;
+}
+
+function agregar() {
+  const texto = document.getElementById("nuevo-texto").value.trim();
+  if (!texto) return;
+  pendientes.unshift({
+    id: ++idCounter,
+    cat: document.getElementById("nueva-cat").value,
+    truck: document.getElementById("nueva-truck").value || null,
+    texto,
+    urgencia: document.getElementById("nueva-urg").value,
+    done: false,
+    fecha: new Date().toISOString().slice(0,10)
+  });
+  document.getElementById("nuevo-texto").value = "";
+  renderPendientes();
+  renderAlertas();
+}
+</script>
+</body>
+</html>
