@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Belaya Experts — Hub</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0f0f11;color:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
+.logo{font-size:32px;font-weight:700;margin-bottom:8px}
+.logo span{color:#1D9E75}
+.sub{font-size:14px;color:#71717a;margin-bottom:48px;letter-spacing:.05em;text-transform:uppercase}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;width:100%;max-width:500px}
+.card{background:#18181b;border:1px solid #27272a;border-radius:16px;padding:28px 24px;text-decoration:none;color:#f4f4f5;transition:border-color .2s;display:flex;flex-direction:column;gap:10px}
+.card:hover{border-color:#3f3f46}
+.card-icon{font-size:28px}
+.card-title{font-size:16px;font-weight:600}
+.card-desc{font-size:12px;color:#71717a;line-height:1.5}
+.footer{margin-top:40px;font-size:11px;color:#3f3f46}
+</style>
+</head>
+<body>
+<div class="logo">Belaya<span>XP</span></div>
+<div class="sub">Operations Center</div>
+<div class="grid">
+  <a href="hub.html" class="card">
+    <div class="card-icon">📊</div>
+    <div class="card-title">Operations Hub</div>
+    <div class="card-desc">Dashboard, nómina, flota y pendientes</div>
+  </a>
+  <a href="maintenance.html" class="card">
+    <div class="card-icon">🔧</div>
+    <div class="card-title">Mantenimiento</div>
+    <div class="card-desc">Estado de flota y fault codes — monitor LG</div>
+  </a>
+</div>
+<div class="footer">Belaya Experts LLC · Houston TX</div>
+</body>
+</html>
