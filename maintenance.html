@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Belaya Experts — Fleet Maintenance</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:#0f0f11;color:#f4f4f5;
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    height:100vh;overflow:hidden;
+    display:flex;flex-direction:column;
+  }
+  /* HEADER */
+  .header{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:14px 28px;border-bottom:1px solid #27272a;flex-shrink:0;
+  }
+  .header-left{display:flex;align-items:center;gap:16px}
+  .logo{font-size:18px;font-weight:700;color:#fff;letter-spacing:-.3px}
+  .logo span{color:#1D9E75}
+  .tagline{font-size:12px;color:#71717a;letter-spacing:.05em;text-transform:uppercase}
+  .clock{font-size:13px;color:#a1a1aa;font-variant-numeric:tabular-nums}
+  .header-right{display:flex;align-items:center;gap:20px}
+  .stat-pill{background:#18181b;border:1px solid #27272a;border-radius:8px;padding:6px 14px;text-align:center}
+  .stat-pill-val{font-size:15px;font-weight:600;color:#f4f4f5}
+  .stat-pill-label{font-size:10px;color:#71717a;margin-top:1px}
+
+  /* GRID */
+  .fleet-grid{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:12px;padding:16px 20px;flex:1;overflow:hidden;
+  }
+
+  /* TRUCK CARD */
+  .truck-card{
+    background:#18181b;border:1px solid #27272a;border-radius:14px;
+    display:flex;flex-direction:column;overflow:hidden;
+    transition:border-color .2s;
+  }
+  .truck-card:hover{border-color:#3f3f46}
+  .truck-card.alert{border-color:#7f1d1d}
+  .truck-card.warning{border-color:#78350f}
+  .truck-card.ok{border-color:#14532d}
+
+  .card-header{padding:14px 16px 10px;border-bottom:1px solid #27272a}
+  .card-unit{font-size:20px;font-weight:700;color:#fff}
+  .card-type{font-size:11px;color:#71717a;margin-top:1px;text-transform:uppercase;letter-spacing:.05em}
+  .card-driver{font-size:13px;color:#a1a1aa;margin-top:6px;display:flex;align-items:center;gap:5px}
+  .driver-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+  .card-body{padding:12px 16px;flex:1;display:flex;flex-direction:column;gap:10px;overflow-y:auto}
+  .card-body::-webkit-scrollbar{width:3px}
+  .card-body::-webkit-scrollbar-track{background:transparent}
+  .card-body::-webkit-scrollbar-thumb{background:#3f3f46;border-radius:3px}
+
+  .section-title{font-size:10px;font-weight:600;color:#52525b;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+
+  /* STATUS BADGE */
+  .status-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500}
+  .status-ok{background:#052e16;color:#4ade80}
+  .status-warning{background:#451a03;color:#fbbf24}
+  .status-alert{background:#450a0a;color:#f87171}
+  .status-taller{background:#1e1b4b;color:#a78bfa}
+
+  /* FAULT */
+  .fault-item{background:#1c1c1e;border-radius:8px;padding:8px 10px;margin-bottom:6px}
+  .fault-spn{font-size:12px;font-weight:600;color:#f87171;margin-bottom:2px}
+  .fault-desc{font-size:11px;color:#a1a1aa;line-height:1.4}
+  .fault-date{font-size:10px;color:#52525b;margin-top:3px}
+  .fault-warning .fault-spn{color:#fbbf24}
+
+  /* MAINTENANCE */
+  .maint-item{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px solid #27272a}
+  .maint-item:last-child{border-bottom:none}
+  .maint-icon{font-size:14px;margin-top:1px;flex-shrink:0}
+  .maint-text{font-size:12px;color:#d4d4d8;line-height:1.4;flex:1}
+  .maint-date{font-size:10px;color:#52525b;margin-top:2px}
+  .maint-cost{font-size:11px;color:#4ade80;font-weight:500;white-space:nowrap}
+
+  /* NEXT SERVICE */
+  .next-service{background:#1c1c1e;border-radius:8px;padding:8px 10px}
+  .next-label{font-size:10px;color:#52525b;margin-bottom:3px}
+  .next-val{font-size:12px;color:#fbbf24;font-weight:500}
+
+  /* EMPTY */
+  .empty-state{font-size:12px;color:#3f3f46;text-align:center;padding:12px 0}
+
+  /* TALLER ACTIVE */
+  .taller-banner{background:#1e1b4b;border:1px solid #3730a3;border-radius:8px;padding:8px 10px;display:flex;align-items:center;gap:8px}
+  .taller-banner-text{font-size:12px;color:#a78bfa;line-height:1.4}
+
+  /* SCROLL hint */
+  .scroll-hint{font-size:9px;color:#3f3f46;text-align:center;padding:4px 0}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div>
+      <div class="logo">Belaya<span>XP</span></div>
+      <div class="tagline">Fleet Maintenance Dashboard</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="stat-pill">
+      <div class="stat-pill-val" style="color:#4ade80">5 / 5</div>
+      <div class="stat-pill-label">Unidades activas</div>
+    </div>
+    <div class="stat-pill">
+      <div class="stat-pill-val" style="color:#f87171">3</div>
+      <div class="stat-pill-label">Alertas activas</div>
+    </div>
+    <div class="stat-pill">
+      <div class="stat-pill-val" style="color:#a78bfa">1</div>
+      <div class="stat-pill-label">En taller</div>
+    </div>
+    <div class="clock" id="clock">--:-- --</div>
+  </div>
+</div>
+
+<div class="fleet-grid">
+
+  <!-- VOLVO 144 -->
+  <div class="truck-card alert">
+    <div class="card-header">
+      <div class="card-unit">Volvo 144</div>
+      <div class="card-type">Drayage — Port Houston</div>
+      <div class="card-driver"><div class="driver-dot" style="background:#1D9E75"></div>José Bonilla</div>
+      <div style="margin-top:8px"><span class="status-badge status-alert">⚠️ Fault activo</span></div>
+    </div>
+    <div class="card-body">
+      <div>
+        <div class="section-title">Fault Codes Activos</div>
+        <div class="fault-item">
+          <div class="fault-spn">SPN 520245</div>
+          <div class="fault-desc">Alerta recibida vía Go-Yes — revisar con mecánico</div>
+          <div class="fault-date">📅 2026-05-27 · Origen: Email Go-Yes</div>
+        </div>
+      </div>
+      <div>
+        <div class="section-title">Historial Reciente</div>
+        <div class="maint-item">
+          <span class="maint-icon">🔧</span>
+          <div style="flex:1">
+            <div class="maint-text">Diagnóstico pendiente — SPN 520245</div>
+            <div class="maint-date">Mayo 2026</div>
+          </div>
+        </div>
+      </div>
+      <div class="next-service">
+        <div class="next-label">⏰ Próximo servicio</div>
+        <div class="next-val">Diagnóstico urgente — SPN 520245</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INTERNATIONAL 149 -->
+  <div class="truck-card warning">
+    <div class="card-header">
+      <div class="card-unit">Int'l 149</div>
+      <div class="card-type">Drayage — Port Houston</div>
+      <div class="card-driver"><div class="driver-dot" style="background:#378ADD"></div>Miguel Pérez <span style="color:#52525b;font-size:10px">(desde Jul)</span></div>
+      <div style="margin-top:8px"><span class="status-badge status-warning">⚠️ Fault activo</span></div>
+    </div>
+    <div class="card-body">
+      <div>
+        <div class="section-title">Fault Codes Activos</div>
+        <div class="fault-item fault-warning">
+          <div class="fault-spn" style="color:#fbbf24">SPN 596</div>
+          <div class="fault-desc">Cruise Control — alerta recibida vía Go-Yes</div>
+          <div class="fault-date">📅 2026-05-27 · Origen: Email Go-Yes</div>
+        </div>
+      </div>
+      <div>
+        <div class="section-title">Cambio de Driver</div>
+        <div class="maint-item">
+          <span class="maint-icon">👤</span>
+          <div style="flex:1">
+            <div class="maint-text">Jorge Belfort → Miguel Pérez</div>
+            <div class="maint-date">Julio 2026</div>
+          </div>
+        </div>
+      </div>
+      <div class="next-service">
+        <div class="next-label">⏰ Próximo servicio</div>
+        <div class="next-val">Revisar SPN 596 — Cruise Control</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VOLVO 142 -->
+  <div class="truck-card ok">
+    <div class="card-header">
+      <div class="card-unit">Volvo 142</div>
+      <div class="card-type">Drayage — Port Houston</div>
+      <div class="card-driver"><div class="driver-dot" style="background:#7F77DD"></div>Patrick Swanson <span style="color:#52525b;font-size:10px">(→ 160 pronto)</span></div>
+      <div style="margin-top:8px"><span class="status-badge status-ok">✓ Operacional</span></div>
+    </div>
+    <div class="card-body">
+      <div>
+        <div class="section-title">Fault Codes Activos</div>
+        <div class="empty-state">Sin fallas registradas</div>
+      </div>
+      <div>
+        <div class="section-title">Historial Reciente</div>
+        <div class="maint-item">
+          <span class="maint-icon">✅</span>
+          <div style="flex:1">
+            <div class="maint-text">Sin incidentes reportados — mejor unidad del año</div>
+            <div class="maint-date">Ene–Jun 2026</div>
+          </div>
+          <div class="maint-cost">$52,835</div>
+        </div>
+      </div>
+      <div class="next-service">
+        <div class="next-label">⏰ Próximo servicio</div>
+        <div class="next-val">Actualizar cuando haya datos</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INTERNATIONAL 148 -->
+  <div class="truck-card warning">
+    <div class="card-header">
+      <div class="card-unit">Int'l 148</div>
+      <div class="card-type">Drayage — Port Houston</div>
+      <div class="card-driver"><div class="driver-dot" style="background:#EF9F27"></div>Sorrento</div>
+      <div style="margin-top:8px"><span class="status-badge status-warning">⚡ Baja producción</span></div>
+    </div>
+    <div class="card-body">
+      <div>
+        <div class="section-title">Historial</div>
+        <div class="maint-item">
+          <span class="maint-icon">👤</span>
+          <div style="flex:1">
+            <div class="maint-text">Josh salió — truck inactivo may 2026</div>
+            <div class="maint-date">Abril 2026</div>
+          </div>
+        </div>
+        <div class="maint-item">
+          <span class="maint-icon">🔄</span>
+          <div style="flex:1">
+            <div class="maint-text">Sorrento entra — primera semana activa</div>
+            <div class="maint-date">Jun 4ta semana 2026</div>
+          </div>
+          <div class="maint-cost">$1,542</div>
+        </div>
+      </div>
+      <div>
+        <div class="section-title">Nota</div>
+        <div class="fault-item fault-warning">
+          <div class="fault-desc">Truck adquirido en subasta 2016. Historial eléctrico — TEC fuse box y door master switch revisados anteriormente.</div>
+        </div>
+      </div>
+      <div class="next-service">
+        <div class="next-label">⏰ Próximo servicio</div>
+        <div class="next-val">Inspección completa post-inactividad</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VOLVO 160 -->
+  <div class="truck-card ok">
+    <div class="card-header">
+      <div class="card-unit">Volvo 160</div>
+      <div class="card-type">NUEVO — Drayage Port Houston</div>
+      <div class="card-driver"><div class="driver-dot" style="background:#e879f9"></div>Jorge Belfort <span style="color:#52525b;font-size:10px">(→ Patrick)</span></div>
+      <div style="margin-top:8px"><span class="status-badge status-ok">✓ Listo — arranca mañana</span></div>
+    </div>
+    <div class="card-body">
+      <div style="background:#052e16;border:1px solid #14532d;border-radius:8px;padding:8px 10px;display:flex;align-items:center;gap:8px">
+        <span style="font-size:16px">✅</span>
+        <div style="font-size:12px;color:#4ade80;line-height:1.4">Reparación completada 17 Jun 2026 · <strong>$580</strong><br>Jorge Belfort arranca mañana 18 Jun</div>
+      </div>
+      <div>
+        <div class="section-title">Fault Codes Activos — 16 Jun 2026</div>
+        <div class="fault-item">
+          <div class="fault-spn">SPN 793 · FMI 10</div>
+          <div class="fault-desc">Wheel Sensor ABS — Axle 3 Left · Tasa de cambio anormal</div>
+          <div class="fault-date">📅 Activo más de 1 semana</div>
+        </div>
+        <div class="fault-item">
+          <div class="fault-spn">SPN 793 · FMI 2</div>
+          <div class="fault-desc">Wheel Sensor ABS — Axle 3 Left · Señal errática · 99 eventos</div>
+          <div class="fault-date">📅 Desde 6/16/2026 8:27 AM</div>
+        </div>
+        <div class="fault-item fault-warning">
+          <div class="fault-spn" style="color:#fbbf24">SPN 790 · FMI 9</div>
+          <div class="fault-desc">Wheel Sensor ABS — Axle 1 Right · Tasa anormal</div>
+          <div class="fault-date">📅 Desde 6/16/2026 8:27 AM</div>
+        </div>
+        <div class="fault-item fault-warning">
+          <div class="fault-spn" style="color:#fbbf24">SPN 647 · FMI 5</div>
+          <div class="fault-desc">Engine Fan Clutch — Corriente por debajo de lo normal</div>
+          <div class="fault-date">📅 Desde 6/16/2026 8:27 AM</div>
+        </div>
+      </div>
+      <div class="next-service">
+        <div class="next-label">⏰ Prioridad taller</div>
+        <div class="next-val">Sensor ABS Axle 3 Left (99 eventos) — urgente</div>
+      </div>
+    </div>
+    <div class="scroll-hint">↕ scroll</div>
+  </div>
+
+</div>
+
+<script>
+function updateClock(){
+  const now = new Date();
+  const h = now.getHours();
+  const m = String(now.getMinutes()).padStart(2,'0');
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const h12 = h % 12 || 12;
+  const days = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+  const months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  const d = now.getDate();
+  const day = days[now.getDay()];
+  const month = months[now.getMonth()];
+  document.getElementById('clock').textContent = `${day} ${d} ${month} · ${h12}:${m} ${ampm}`;
+}
+updateClock();
+setInterval(updateClock, 1000);
+</script>
+</body>
+</html>
